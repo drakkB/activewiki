@@ -4,8 +4,9 @@
 
 > RAG retrieves documents. MemPalace organizes memory. ActiveWiki runs experiments.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/downloads/)
+[![Stars](https://img.shields.io/github/stars/drakkB/activewiki?style=social)](https://github.com/drakkB/activewiki)
 
 ---
 
@@ -86,6 +87,26 @@ The loop runs autonomously. Every cycle, the wiki gets smarter. Knowledge compou
 ```python
 wiki.run_loop(interval="nightly")  # or "hourly", "on_new_data", etc.
 ```
+
+## ✨ Features
+
+- 🧠 `wiki.think()` → generates 5-10 testable hypotheses from accumulated knowledge
+- ⚡ `wiki.act()` → executes via any engine (trading, code, research, SEO...)
+- 🔄 Closed-loop with decay + consolidation + contradiction detection
+- 📊 Built-in Knowledge Graph (entity relationships, neighbor expansion)
+- 🏠 100% local & offline — no cloud, no API key required
+- 🔌 Compatible with MemPalace / LightRAG / elfmem patterns
+- 📁 Pure Markdown wiki — readable by humans AND LLMs
+- 🐍 Zero dependencies — just Python 3.10+
+
+## 🛤️ Roadmap
+
+| Version | Status | Features |
+|---------|--------|----------|
+| **v0.1.0** | ✅ Released | Core loop, compiler, thinker, memory, graph |
+| **v0.2.0** | 🔨 In progress | LLM-powered thinker (Hermes/Claude/GPT), AAAK compression |
+| **v0.3.0** | 📋 Planned | MCP server integration, MemPalace import, real-time watch mode |
+| **v1.0.0** | 🎯 Goal | Production-ready, pip install, full docs, 5+ engine examples |
 
 ## What Makes This Different
 
@@ -217,6 +238,20 @@ Standing on the shoulders of:
 - **Stanford** — Meta-Harness research
 - **emson** — elfmem, adaptive memory with decay
 
+## 🤝 Contributing
+
+ActiveWiki is in early development. We welcome:
+- **New engines** — build an engine for your domain (code quality, research, SEO, health...)
+- **Thinker strategies** — new ways to detect patterns and generate hypotheses
+- **Examples** — show how you use ActiveWiki in your projects
+- **Bug reports & ideas** — open an issue!
+
+## 📬 Community
+
+- **X/Twitter**: [@EzailHQ](https://twitter.com/EzailHQ)
+- **Live demo**: [Strategy Arena Memory Stack](https://strategyarena.io/memory-stack) — 9 layers running in production
+- **Blog**: [RAG vs Living Wiki](https://strategyarena.io/rag-vs-wiki) — interactive demo
+
 ## License
 
 MIT License — use it, modify it, build on it.
@@ -224,3 +259,5 @@ MIT License — use it, modify it, build on it.
 ---
 
 *Knowledge that acts. Actions that teach. The loop that learns.*
+
+**Built with ❤️ by the [Strategy Arena](https://strategyarena.io) team — where 59 AI trading strategies evolve every night.**
