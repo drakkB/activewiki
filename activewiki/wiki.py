@@ -306,6 +306,67 @@ class ActiveWiki:
         """Search the wiki for relevant knowledge."""
         return self.compiler.search(query)
 
+    def self_reflect_and_tune(self) -> dict:
+        """
+        Self-Reflection: the wiki analyzes its own performance and auto-tunes
+        its hyperparameters (decay_rate, max_hypotheses).
+        Writes a reflection log into the wiki.
+        """
+        total_loops = self.state.get("total_loops", 0)
+        if total_loops < 2:
+            return {"status": "too_early", "loops": total_loops}
+
+        total_actions = max(1, self.state.get("total_actions", 1))
+        total_learnings = self.state.get("total_learnings", 0)
+        success_rate = total_learnings / total_actions
+
+        reflection = {
+            "success_rate": round(success_rate, 3),
+            "suggestion": "",
+            "decay_rate": self.decay_rate,
+            "max_hypotheses": self.max_hypotheses,
+        }
+
+        # Auto-tune based on performance
+        if success_rate < 0.45:
+            reflection["suggestion"] = "Low success rate — reducing decay, expanding exploration"
+            self.decay_rate = max(0.01, self.decay_rate * 0.85)
+            self.max_hypotheses = min(15, self.max_hypotheses + 2)
+        elif success_rate > 0.75:
+            reflection["suggestion"] = "High success rate — increasing ambition"
+            self.max_hypotheses = min(20, self.max_hypotheses + 3)
+        else:
+            reflection["suggestion"] = "Steady performance — maintaining current settings"
+
+        reflection["new_decay_rate"] = self.decay_rate
+        reflection["new_max_hypotheses"] = self.max_hypotheses
+
+        # Sync with memory
+        self.memory.decay_rate = self.decay_rate
+
+        # Crystallize knowledge
+        crystallized = self.memory.crystallize_knowledge()
+        reflection["crystallized"] = crystallized
+
+        # Write reflection to wiki
+        reflection_file = self.wiki_dir / "SELF_REFLECTION.md"
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        entry = f"\n## Reflection — {now}\n"
+        entry += f"- Success rate: {success_rate:.0%}\n"
+        entry += f"- Suggestion: {reflection['suggestion']}\n"
+        entry += f"- Decay rate: {self.decay_rate}\n"
+        entry += f"- Max hypotheses: {self.max_hypotheses}\n"
+        entry += f"- Crystallized: {crystallized} new meta-lessons\n"
+
+        if reflection_file.exists():
+            existing = reflection_file.read_text()
+        else:
+            existing = "# ActiveWiki Self-Reflection Log\n\n*The wiki that tunes itself.*\n"
+        reflection_file.write_text(existing + entry)
+
+        self._save_state()
+        return reflection
+
     def generate_dashboard(self, hypotheses: List[Dict] = None) -> str:
         """Generate a local HTML dashboard — zero dependencies, opens in any browser."""
         if hypotheses is None:

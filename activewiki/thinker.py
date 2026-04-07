@@ -56,7 +56,13 @@ class HypothesisGenerator:
         # Strategy 9: Meta-learning (the wiki improves itself)
         hypotheses.extend(self._generate_meta_hypotheses(lessons))
 
-        # Strategy 10: LLM-powered deep analysis (if available)
+        # Strategy 10: Hypothesis evolution (evolve old hypotheses into v2.0)
+        hypotheses.extend(self._evolve_previous_hypotheses(lessons))
+
+        # Strategy 11: Counterfactual simulation (what if we did the OPPOSITE?)
+        hypotheses.extend(self._simulate_counterfactuals(lessons))
+
+        # Strategy 12: LLM-powered deep analysis (if available)
         if self.llm_fn and lessons:
             hypotheses.extend(self._llm_analysis(lessons, wiki_content))
 
@@ -407,3 +413,43 @@ Return ONLY valid JSON array."""
 
         impact = confidence * action_value * (1 + min(supporting * 0.15, 1.0))
         return round(min(impact, 9.9), 2)
+
+    def _evolve_previous_hypotheses(self, lessons: List[Dict]) -> List[Dict]:
+        """Hypothesis evolution: take old validated lessons and create v2.0 variants."""
+        hypotheses = []
+        for lesson in lessons:
+            strength = lesson.get("strength", 0)
+            confirmations = lesson.get("confirmations", 0)
+            finding = lesson.get("finding", "")
+
+            # Only evolve lessons that were confirmed but could be better
+            if strength > 0.6 and confirmations >= 2 and finding:
+                hypotheses.append({
+                    "id": f"evolve_{lesson.get('id', 'old')}",
+                    "type": "evolution",
+                    "hypothesis": f"Evolve validated lesson: '{finding[:60]}' — test a stronger variant with more data or tighter parameters.",
+                    "action": {"evolve_hypothesis": lesson.get("id"), "original_strength": strength},
+                    "evidence": f"Strength={strength:.2f}, confirmed {confirmations}x — ready for v2.0",
+                    "confidence": min(0.85, 0.5 + confirmations * 0.1),
+                })
+        return hypotheses[:3]
+
+    def _simulate_counterfactuals(self, lessons: List[Dict]) -> List[Dict]:
+        """Counterfactual simulation: what if we did the OPPOSITE of our strongest lessons?"""
+        hypotheses = []
+        if len(lessons) < 6:
+            return hypotheses
+
+        # Take the strongest lessons and challenge them
+        high_strength = [l for l in lessons if l.get("strength", 0) > 0.8]
+        for lesson in high_strength[:3]:
+            finding = lesson.get("finding", "")
+            hypotheses.append({
+                "id": f"counter_{lesson.get('id', 'x')}",
+                "type": "counterfactual",
+                "hypothesis": f"COUNTERFACTUAL: What if '{finding[:50]}' is wrong? Test the radical opposite.",
+                "action": {"counterfactual_test": True, "challenge_lesson": finding[:80]},
+                "evidence": f"Challenging high-strength lesson (str={lesson.get('strength',0):.2f}) — real science questions everything",
+                "confidence": 0.65,  # Lower confidence — it's a challenge, not a certainty
+            })
+        return hypotheses

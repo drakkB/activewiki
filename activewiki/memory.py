@@ -129,6 +129,51 @@ class MemoryManager:
         return [l for l in self.lessons
                 if l.get("strength", 0) > 0.7 and l.get("confidence") in ("high", "medium")]
 
+    def crystallize_knowledge(self) -> int:
+        """
+        Knowledge Crystallization: when 3+ lessons say similar things,
+        merge them into a higher-level 'meta-lesson'. The wiki rises in abstraction.
+        """
+        created = 0
+        clusters = {}
+
+        for lesson in self.lessons:
+            if lesson.get("type") == "crystallized":
+                continue  # Don't re-crystallize
+            # Cluster by shared key words
+            key_words = sorted(w.lower() for w in lesson.get("finding", "").split() if len(w) > 4)
+            key = " ".join(key_words[:5])
+            if key not in clusters:
+                clusters[key] = []
+            clusters[key].append(lesson)
+
+        for key, group in clusters.items():
+            if len(group) >= 3 and all(l.get("strength", 0) > 0.6 for l in group):
+                avg_strength = sum(l.get("strength", 0) for l in group) / len(group)
+                meta_finding = f"CRYSTALLIZED ({len(group)} lessons): {group[0].get('finding', '')[:60]}"
+
+                self.lessons.append({
+                    "id": f"crystal_{len(self.lessons)}",
+                    "finding": meta_finding,
+                    "type": "crystallized",
+                    "confidence": "very_high",
+                    "strength": min(2.0, avg_strength * 1.3),
+                    "confirmations": len(group),
+                    "confidence_score": 0.9,
+                    "created": datetime.now(timezone.utc).isoformat(),
+                    "updated": datetime.now(timezone.utc).isoformat(),
+                    "crystallized_from": [l.get("id", "") for l in group],
+                })
+                created += 1
+
+                # Boost the original lessons slightly
+                for l in group:
+                    l["strength"] = min(2.0, l.get("strength", 1.0) + 0.1)
+
+        if created:
+            self._save()
+        return created
+
     def prune_wiki(self, wiki_dir: Path, max_pages: int = 150) -> int:
         """
         Intelligent wiki pruning: keeps the wiki lean without losing critical knowledge.
