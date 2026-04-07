@@ -287,6 +287,118 @@ class ActiveWiki:
         }
 
     # ═══════════════════════════════════════════════════════════
+    # FULL AUTONOMOUS LOOP (the feature everyone will copy-paste)
+    # ═══════════════════════════════════════════════════════════
+
+    def run_full_loop(self, engine: Any = None, data_source: str = None, max_cycles: int = 1) -> dict:
+        """
+        Complete autonomous loop — think, act, learn, crystallize, prune, reflect, publish.
+        This is the one-liner that runs everything.
+        """
+        summary = {"cycles": 0, "hypotheses": 0, "crystals": 0, "pruned": 0, "consolidated": 0}
+
+        for cycle in range(max_cycles):
+            print(f"\n{'='*50}")
+            print(f"[ActiveWiki] Cycle {cycle+1}/{max_cycles}")
+            print(f"{'='*50}")
+
+            # Ingest new data if provided
+            if data_source:
+                self.ingest(data_source)
+
+            # Think
+            hypotheses = self.think()
+            top_impact = max((h.get("expected_impact", 0) for h in hypotheses), default=0)
+            print(f"  Think: {len(hypotheses)} hypotheses (top impact: {top_impact:.1f})")
+
+            # Act
+            results = self.act(hypotheses, engine=engine)
+            acted = [r for r in results if r.get("success") is not None]
+            print(f"  Act: {len(acted)} tested")
+
+            # Learn
+            learned = self.learn(results)
+            print(f"  Learn: {learned['consolidated']} consolidated, {learned['decayed']} decayed")
+
+            # Crystallize
+            crystals = self.memory.crystallize_knowledge()
+            print(f"  Crystallize: {crystals} new meta-lessons")
+
+            # Prune
+            pruned = self.memory.prune_wiki(self.wiki_dir, max_pages=120)
+            print(f"  Prune: {pruned} weak pages removed")
+
+            # Dashboard
+            self.generate_dashboard(hypotheses)
+
+            # Self-reflect and auto-tune
+            reflection = self.self_reflect_and_tune()
+            print(f"  Reflect: {reflection.get('suggestion', 'stable')}")
+
+            # Research Brief (every 7 cycles)
+            if self.state.get("total_loops", 0) % 7 == 0 and self.state.get("total_loops", 0) > 0:
+                self.generate_research_brief()
+                print(f"  Published: Research Brief generated")
+
+            self.state["total_loops"] = self.state.get("total_loops", 0) + 1
+            self._save_state()
+
+            summary["cycles"] += 1
+            summary["hypotheses"] += len(hypotheses)
+            summary["crystals"] += crystals
+            summary["pruned"] += pruned
+            summary["consolidated"] += learned["consolidated"]
+
+        return summary
+
+    def generate_research_brief(self) -> str:
+        """Auto-generate a mini research paper from accumulated knowledge."""
+        crystals = [l for l in self.memory.lessons if l.get("type") == "crystallized"]
+        strong = self.memory.get_strong_lessons()
+        hypotheses = self.think()[:5]
+        total_loops = self.state.get("total_loops", 0)
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+        brief = f"""# ActiveWiki Research Brief
+*Auto-generated: {now}*
+
+## Abstract
+After {total_loops} autonomous cycles, ActiveWiki has accumulated {len(self.memory.lessons)} lessons,
+crystallized {len(crystals)} meta-knowledge entries, and generated hypotheses with up to
+{max((h.get('expected_impact', 0) for h in hypotheses), default=0):.1f} expected impact score.
+
+## Key Discoveries (Crystallized Knowledge)
+"""
+        for c in crystals[:5]:
+            brief += f"- **{c.get('finding', '')[:100]}** (strength: {c.get('strength', 0):.2f})\n"
+
+        if not crystals:
+            for s in strong[:5]:
+                brief += f"- {s.get('finding', '')[:100]} (strength: {s.get('strength', 0):.2f})\n"
+
+        brief += f"""
+## Active Hypotheses (Next Experiments)
+"""
+        for h in hypotheses:
+            brief += f"- [{h.get('type', '?')}] {h.get('hypothesis', '')[:100]} (impact: {h.get('expected_impact', 0):.1f})\n"
+
+        brief += f"""
+## System Health
+- Total lessons: {len(self.memory.lessons)}
+- Crystallized: {len(crystals)}
+- Decay rate: {self.decay_rate}
+- Max hypotheses: {self.max_hypotheses}
+- Graph: {self.graph.node_count()} nodes, {self.graph.edge_count()} edges
+
+---
+*Generated autonomously by [ActiveWiki](https://github.com/drakkB/activewiki) — 100% local, $0 cost.*
+*Built by [Strategy Arena](https://strategyarena.io) — 59 AI trading strategies evolving every night.*
+"""
+        brief_path = self.wiki_dir / "RESEARCH_BRIEF.md"
+        brief_path.write_text(brief)
+        return str(brief_path)
+
+    # ═══════════════════════════════════════════════════════════
     # UTILITIES
     # ═══════════════════════════════════════════════════════════
 

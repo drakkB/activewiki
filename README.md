@@ -1,8 +1,9 @@
 # ActiveWiki
 
-**The first wiki that does science on its own.**
+**Your Personal AI Scientist that works 24/7 — 100% local.**
 
-> RAG retrieves documents. MemPalace organizes memory. ActiveWiki runs experiments.
+MemPalace remembers. Sakana AI Scientist discovers once.
+**ActiveWiki remembers, discovers, experiments, publishes, and improves itself — forever.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/downloads/)
@@ -10,9 +11,9 @@
 
 ---
 
-**MemPalace = persistent memory. ActiveWiki = persistent intelligence.**
+**The only open-source Personal AI Scientist with persistent memory and a closed scientific loop.**
 
-You don't read your wiki. Your wiki reads the world, tests ideas, and makes you smarter.
+You don't read your wiki. Your wiki becomes a researcher that works while you sleep.
 
 ---
 
@@ -98,6 +99,12 @@ wiki.run_loop(interval="nightly")  # or "hourly", "on_new_data", etc.
 - 🔌 Compatible with MemPalace / LightRAG / elfmem patterns
 - 📁 Pure Markdown wiki — readable by humans AND LLMs
 - 🐍 Zero dependencies — just Python 3.10+
+- 🌐 `wiki.run_full_loop(engine)` → one-liner autonomous loop (think → act → learn → crystallize → prune → reflect)
+- 📊 Auto-generated HTML dashboard updated every cycle
+- 📝 Weekly Research Brief — auto-publishes a mini-paper every 7 cycles
+- 🔮 Counterfactual simulation — challenges your strongest beliefs
+- 💎 Knowledge Crystallization — merges confirmed lessons into meta-knowledge
+- 🪞 Self-Reflection — the wiki auto-tunes its own decay_rate and max_hypotheses
 
 ## 🛤️ Roadmap
 

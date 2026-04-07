@@ -1,9 +1,0 @@
-{
-  "total_ingestions": 1,
-  "total_hypotheses": 7,
-  "total_actions": 7,
-  "total_learnings": 2,
-  "total_loops": 1,
-  "created": "2026-04-07T15:52:37.700220+00:00",
-  "last_updated": "2026-04-07T15:52:37.807872+00:00"
-}
