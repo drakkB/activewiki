@@ -1,0 +1,46 @@
+[
+  {
+    "id": "lesson_0",
+    "finding": "RSI entry at 25 produces best results",
+    "type": "parameters",
+    "confidence": "high",
+    "strength": 1.3,
+    "confirmations": 2,
+    "source": "",
+    "created": "2026-04-07T13:30:52.064019+00:00",
+    "updated": "2026-04-07T13:30:52.134111+00:00"
+  },
+  {
+    "id": "lesson_1",
+    "finding": "Bollinger bands win 3 out of 4 runs",
+    "type": "entry_type",
+    "confidence": "high",
+    "strength": 1.3,
+    "confirmations": 2,
+    "source": "",
+    "created": "2026-04-07T13:30:52.065290+00:00",
+    "updated": "2026-04-07T13:30:52.137291+00:00"
+  },
+  {
+    "id": "lesson_2",
+    "finding": "MACD rarely wins in current conditions",
+    "type": "entry_type",
+    "confidence": "medium",
+    "strength": 1.0,
+    "confirmations": 0,
+    "source": "",
+    "created": "2026-04-07T13:30:52.070068+00:00",
+    "updated": "2026-04-07T13:30:52.070073+00:00"
+  },
+  {
+    "id": "lesson_3",
+    "finding": "Leviathan stagnating at 57.53 for 3 nights",
+    "type": "stagnation",
+    "confidence": "high",
+    "strength": 1.3,
+    "confirmations": 2,
+    "source": "",
+    "created": "2026-04-07T13:30:52.074121+00:00",
+    "updated": "2026-04-07T13:30:52.141484+00:00"
+  }
+]

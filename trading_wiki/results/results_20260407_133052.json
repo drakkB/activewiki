@@ -1,0 +1,81 @@
+[
+  {
+    "hypothesis": {
+      "id": "exploit_lesson_0",
+      "type": "exploitation",
+      "hypothesis": "High-confidence lesson: 'RSI entry at 25 produces best results'. Double down on this approach.",
+      "action": {
+        "exploit_lesson": "RSI entry at 25 produces best results",
+        "strength": 1.15
+      },
+      "evidence": "Strength=1.15, confidence=high",
+      "confidence": 0.73
+    },
+    "result": {
+      "success": true,
+      "pnl": 2.3,
+      "reason": "confirmed profitable in backtest"
+    },
+    "success": true,
+    "timestamp": "2026-04-07T13:30:52.129760+00:00"
+  },
+  {
+    "hypothesis": {
+      "id": "exploit_lesson_1",
+      "type": "exploitation",
+      "hypothesis": "High-confidence lesson: 'Bollinger bands win 3 out of 4 runs'. Double down on this approach.",
+      "action": {
+        "exploit_lesson": "Bollinger bands win 3 out of 4 runs",
+        "strength": 1.15
+      },
+      "evidence": "Strength=1.15, confidence=high",
+      "confidence": 0.73
+    },
+    "result": {
+      "success": true,
+      "pnl": 2.3,
+      "reason": "confirmed profitable in backtest"
+    },
+    "success": true,
+    "timestamp": "2026-04-07T13:30:52.129766+00:00"
+  },
+  {
+    "hypothesis": {
+      "id": "exploit_lesson_3",
+      "type": "exploitation",
+      "hypothesis": "High-confidence lesson: 'Leviathan stagnating at 57.53 for 3 nights'. Double down on this approach.",
+      "action": {
+        "exploit_lesson": "Leviathan stagnating at 57.53 for 3 nights",
+        "strength": 1.15
+      },
+      "evidence": "Strength=1.15, confidence=high",
+      "confidence": 0.73
+    },
+    "result": {
+      "success": true,
+      "pnl": 0.1,
+      "reason": "stagnation confirmed, exploring"
+    },
+    "success": true,
+    "timestamp": "2026-04-07T13:30:52.129769+00:00"
+  },
+  {
+    "hypothesis": {
+      "id": "explore_validated",
+      "type": "exploration",
+      "hypothesis": "Graph group 'validated' has 3 entities but no lessons yet. Investigate this area.",
+      "action": {
+        "explore_group": "validated"
+      },
+      "evidence": "3 entities, 0 lessons",
+      "confidence": 0.5
+    },
+    "result": {
+      "success": false,
+      "pnl": -0.8,
+      "reason": "hypothesis not confirmed"
+    },
+    "success": false,
+    "timestamp": "2026-04-07T13:30:52.129772+00:00"
+  }
+]

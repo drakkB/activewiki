@@ -22,13 +22,15 @@ class TradingEngine:
     def execute(self, hypothesis: dict) -> dict:
         """Test a hypothesis by running a mini backtest."""
         action = hypothesis.get("action", {})
+        hyp_text = hypothesis.get("hypothesis", "").lower()
 
         # Simulate: hypotheses about RSI and Bollinger tend to work
-        focus = action.get("focus_on", "")
-        if focus in ("rsi", "bollinger", "momentum"):
-            return {"success": True, "pnl": 2.3, "reason": f"{focus} confirmed profitable"}
+        if any(w in hyp_text for w in ("rsi", "bollinger", "bands", "entry")):
+            return {"success": True, "pnl": 2.3, "reason": "confirmed profitable in backtest"}
         elif action.get("force_exploration"):
             return {"success": True, "pnl": 0.5, "reason": "exploration found new edge"}
+        elif "stagnat" in hyp_text:
+            return {"success": True, "pnl": 0.1, "reason": "stagnation confirmed, exploring"}
         else:
             return {"success": False, "pnl": -0.8, "reason": "hypothesis not confirmed"}
 
