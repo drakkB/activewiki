@@ -9,7 +9,8 @@
         "strength": 1.15
       },
       "evidence": "Strength=1.15, confidence=high",
-      "confidence": 0.73
+      "confidence": 0.73,
+      "expected_impact": 1.17
     },
     "result": {
       "success": true,
@@ -17,7 +18,7 @@
       "reason": "confirmed profitable in backtest"
     },
     "success": true,
-    "timestamp": "2026-04-07T13:30:52.129760+00:00"
+    "timestamp": "2026-04-07T15:52:37.785654+00:00"
   },
   {
     "hypothesis": {
@@ -29,7 +30,8 @@
         "strength": 1.15
       },
       "evidence": "Strength=1.15, confidence=high",
-      "confidence": 0.73
+      "confidence": 0.73,
+      "expected_impact": 1.17
     },
     "result": {
       "success": true,
@@ -37,7 +39,7 @@
       "reason": "confirmed profitable in backtest"
     },
     "success": true,
-    "timestamp": "2026-04-07T13:30:52.129766+00:00"
+    "timestamp": "2026-04-07T15:52:37.785660+00:00"
   },
   {
     "hypothesis": {
@@ -49,7 +51,8 @@
         "strength": 1.15
       },
       "evidence": "Strength=1.15, confidence=high",
-      "confidence": 0.73
+      "confidence": 0.73,
+      "expected_impact": 1.17
     },
     "result": {
       "success": true,
@@ -57,7 +60,7 @@
       "reason": "stagnation confirmed, exploring"
     },
     "success": true,
-    "timestamp": "2026-04-07T13:30:52.129769+00:00"
+    "timestamp": "2026-04-07T15:52:37.785664+00:00"
   },
   {
     "hypothesis": {
@@ -68,7 +71,8 @@
         "explore_group": "validated"
       },
       "evidence": "3 entities, 0 lessons",
-      "confidence": 0.5
+      "confidence": 0.5,
+      "expected_impact": 0.5
     },
     "result": {
       "success": false,
@@ -76,6 +80,6 @@
       "reason": "hypothesis not confirmed"
     },
     "success": false,
-    "timestamp": "2026-04-07T13:30:52.129772+00:00"
+    "timestamp": "2026-04-07T15:52:37.785666+00:00"
   }
 ]

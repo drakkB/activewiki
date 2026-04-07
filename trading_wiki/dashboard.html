@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>ActiveWiki Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0f;color:#e2e8f0;padding:30px}
+h1{color:#00ff9d;font-size:1.8em;margin-bottom:4px}
+.sub{color:#64748b;font-size:.85em;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0}
+.stat{background:#1a1a2e;border-radius:10px;padding:16px;text-align:center}
+.stat .num{font-size:1.8em;font-weight:700;color:#00ff9d}
+.stat .label{font-size:.75em;color:#64748b;margin-top:4px}
+.card{background:#1a1a2e;border-radius:12px;padding:20px;margin:20px 0}
+.card h2{font-size:1em;color:#e2e8f0;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:.82em}
+th{text-align:left;padding:6px 8px;color:#64748b;border-bottom:1px solid #333}
+td{padding:6px 8px;border-bottom:1px solid #1a1a2e}
+.footer{text-align:center;color:#475569;font-size:.75em;margin-top:30px}
+.footer a{color:#00ff9d;text-decoration:none}
+</style></head>
+<body>
+<h1>ActiveWiki Dashboard</h1>
+<div class="sub">Generated: 2026-04-07 15:52 UTC | Loop #1</div>
+
+<div class="grid">
+    <div class="stat"><div class="num">4</div><div class="label">Active Lessons</div></div>
+    <div class="stat"><div class="num">7</div><div class="label">Hypotheses Generated</div></div>
+    <div class="stat"><div class="num">1</div><div class="label">Loops Completed</div></div>
+    <div class="stat"><div class="num">6</div><div class="label">Graph Nodes</div></div>
+    <div class="stat"><div class="num">3</div><div class="label">Wiki Pages</div></div>
+    <div class="stat"><div class="num">4</div><div class="label">Current Hypotheses</div></div>
+</div>
+
+<div class="card">
+    <h2>Top Hypotheses (by Expected Impact)</h2>
+    <table>
+        <thead><tr><th>Impact</th><th></th><th>Type</th><th>Hypothesis</th><th>Conf</th></tr></thead>
+        <tbody><tr>
+                <td style="color:#ffd700;font-weight:700">1.17</td>
+                <td><div style="background:#ffd70033;border-radius:4px;height:8px;width:11%"></div></td>
+                <td>exploitation</td>
+                <td>High-confidence lesson: 'RSI entry at 25 produces best results'. Double down on ...</td>
+                <td>73%</td>
+            </tr><tr>
+                <td style="color:#ffd700;font-weight:700">1.17</td>
+                <td><div style="background:#ffd70033;border-radius:4px;height:8px;width:11%"></div></td>
+                <td>exploitation</td>
+                <td>High-confidence lesson: 'Bollinger bands win 3 out of 4 runs'. Double down on th...</td>
+                <td>73%</td>
+            </tr><tr>
+                <td style="color:#ffd700;font-weight:700">1.17</td>
+                <td><div style="background:#ffd70033;border-radius:4px;height:8px;width:11%"></div></td>
+                <td>exploitation</td>
+                <td>High-confidence lesson: 'Leviathan stagnating at 57.53 for 3 nights'. Double dow...</td>
+                <td>73%</td>
+            </tr><tr>
+                <td style="color:#ff6b6b;font-weight:700">0.5</td>
+                <td><div style="background:#ff6b6b33;border-radius:4px;height:8px;width:5%"></div></td>
+                <td>exploration</td>
+                <td>Graph group 'validated' has 3 entities but no lessons yet. Investigate this area...</td>
+                <td>50%</td>
+            </tr></tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Active Lessons (by Strength)</h2>
+    <table>
+        <thead><tr><th>Strength</th><th></th><th>Score</th><th>Finding</th><th>Type</th></tr></thead>
+        <tbody><tr>
+                <td>1.30</td>
+                <td><div style="background:#00ff9d33;border-radius:4px;height:8px;width:130%"></div></td>
+                <td>0.840</td>
+                <td>RSI entry at 25 produces best results</td>
+                <td>parameters</td>
+            </tr><tr>
+                <td>1.30</td>
+                <td><div style="background:#00ff9d33;border-radius:4px;height:8px;width:130%"></div></td>
+                <td>0.840</td>
+                <td>Bollinger bands win 3 out of 4 runs</td>
+                <td>entry_type</td>
+            </tr><tr>
+                <td>1.30</td>
+                <td><div style="background:#00ff9d33;border-radius:4px;height:8px;width:130%"></div></td>
+                <td>0.840</td>
+                <td>Leviathan stagnating at 57.53 for 3 nights</td>
+                <td>stagnation</td>
+            </tr><tr>
+                <td>1.00</td>
+                <td><div style="background:#00ff9d33;border-radius:4px;height:8px;width:100%"></div></td>
+                <td>0.600</td>
+                <td>MACD rarely wins in current conditions</td>
+                <td>entry_type</td>
+            </tr></tbody>
+    </table>
+</div>
+
+<div class="footer">
+    <a href="https://github.com/drakkB/activewiki">ActiveWiki</a> — The wiki that thinks, acts, and learns.
+    Built by <a href="https://strategyarena.io">Strategy Arena</a>.
+</div>
+</body></html>

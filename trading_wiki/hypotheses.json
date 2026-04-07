@@ -9,7 +9,8 @@
         "strength": 1.15
       },
       "evidence": "Strength=1.15, confidence=high",
-      "confidence": 0.73
+      "confidence": 0.73,
+      "expected_impact": 1.17
     },
     {
       "id": "exploit_lesson_1",
@@ -20,7 +21,8 @@
         "strength": 1.15
       },
       "evidence": "Strength=1.15, confidence=high",
-      "confidence": 0.73
+      "confidence": 0.73,
+      "expected_impact": 1.17
     },
     {
       "id": "exploit_lesson_3",
@@ -31,7 +33,8 @@
         "strength": 1.15
       },
       "evidence": "Strength=1.15, confidence=high",
-      "confidence": 0.73
+      "confidence": 0.73,
+      "expected_impact": 1.17
     },
     {
       "id": "explore_validated",
@@ -41,9 +44,10 @@
         "explore_group": "validated"
       },
       "evidence": "3 entities, 0 lessons",
-      "confidence": 0.5
+      "confidence": 0.5,
+      "expected_impact": 0.5
     }
   ],
-  "generated": "2026-04-07T13:30:52.128409+00:00",
+  "generated": "2026-04-07T15:52:37.784363+00:00",
   "count": 4
 }

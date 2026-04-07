@@ -275,6 +275,9 @@ class ActiveWiki:
         self.state["total_loops"] = self.state.get("total_loops", 0) + 1
         self._save_state()
 
+        # 5. Generate dashboard
+        self.generate_dashboard(hypotheses)
+
         return {
             "hypotheses": len(hypotheses),
             "actions": len(acted),
@@ -302,3 +305,99 @@ class ActiveWiki:
     def search(self, query: str) -> List[Dict]:
         """Search the wiki for relevant knowledge."""
         return self.compiler.search(query)
+
+    def generate_dashboard(self, hypotheses: List[Dict] = None) -> str:
+        """Generate a local HTML dashboard — zero dependencies, opens in any browser."""
+        if hypotheses is None:
+            hypotheses = self.think()
+
+        status = self.status()
+        lessons = self.memory.get_active_lessons()
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+        # Build hypothesis rows
+        hyp_rows = ""
+        for h in hypotheses[:10]:
+            impact = h.get("expected_impact", 0)
+            conf = h.get("confidence", 0)
+            bar_width = int(impact / 10 * 100)
+            color = "#00ff9d" if impact > 2 else "#ffd700" if impact > 1 else "#ff6b6b"
+            hyp_rows += f"""<tr>
+                <td style="color:{color};font-weight:700">{impact}</td>
+                <td><div style="background:{color}33;border-radius:4px;height:8px;width:{bar_width}%"></div></td>
+                <td>{h.get('type','?')}</td>
+                <td>{h.get('hypothesis','')[:80]}...</td>
+                <td>{conf:.0%}</td>
+            </tr>"""
+
+        # Build lesson rows
+        lesson_rows = ""
+        for l in sorted(lessons, key=lambda x: -x.get("strength", 0))[:10]:
+            strength = l.get("strength", 1.0)
+            score = l.get("confidence_score", 0)
+            bar_w = int(strength * 100)
+            lesson_rows += f"""<tr>
+                <td>{strength:.2f}</td>
+                <td><div style="background:#00ff9d33;border-radius:4px;height:8px;width:{bar_w}%"></div></td>
+                <td>{score:.3f}</td>
+                <td>{l.get('finding','')[:70]}</td>
+                <td>{l.get('type','')}</td>
+            </tr>"""
+
+        html = f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>ActiveWiki Dashboard</title>
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+body{{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0f;color:#e2e8f0;padding:30px}}
+h1{{color:#00ff9d;font-size:1.8em;margin-bottom:4px}}
+.sub{{color:#64748b;font-size:.85em;margin-bottom:24px}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0}}
+.stat{{background:#1a1a2e;border-radius:10px;padding:16px;text-align:center}}
+.stat .num{{font-size:1.8em;font-weight:700;color:#00ff9d}}
+.stat .label{{font-size:.75em;color:#64748b;margin-top:4px}}
+.card{{background:#1a1a2e;border-radius:12px;padding:20px;margin:20px 0}}
+.card h2{{font-size:1em;color:#e2e8f0;margin-bottom:12px}}
+table{{width:100%;border-collapse:collapse;font-size:.82em}}
+th{{text-align:left;padding:6px 8px;color:#64748b;border-bottom:1px solid #333}}
+td{{padding:6px 8px;border-bottom:1px solid #1a1a2e}}
+.footer{{text-align:center;color:#475569;font-size:.75em;margin-top:30px}}
+.footer a{{color:#00ff9d;text-decoration:none}}
+</style></head>
+<body>
+<h1>ActiveWiki Dashboard</h1>
+<div class="sub">Generated: {now} | Loop #{status.get('total_loops', 0)}</div>
+
+<div class="grid">
+    <div class="stat"><div class="num">{status.get('active_lessons', 0)}</div><div class="label">Active Lessons</div></div>
+    <div class="stat"><div class="num">{status.get('total_hypotheses', 0)}</div><div class="label">Hypotheses Generated</div></div>
+    <div class="stat"><div class="num">{status.get('total_loops', 0)}</div><div class="label">Loops Completed</div></div>
+    <div class="stat"><div class="num">{status.get('graph_nodes', 0)}</div><div class="label">Graph Nodes</div></div>
+    <div class="stat"><div class="num">{status.get('wiki_pages', 0)}</div><div class="label">Wiki Pages</div></div>
+    <div class="stat"><div class="num">{len(hypotheses)}</div><div class="label">Current Hypotheses</div></div>
+</div>
+
+<div class="card">
+    <h2>Top Hypotheses (by Expected Impact)</h2>
+    <table>
+        <thead><tr><th>Impact</th><th></th><th>Type</th><th>Hypothesis</th><th>Conf</th></tr></thead>
+        <tbody>{hyp_rows}</tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Active Lessons (by Strength)</h2>
+    <table>
+        <thead><tr><th>Strength</th><th></th><th>Score</th><th>Finding</th><th>Type</th></tr></thead>
+        <tbody>{lesson_rows}</tbody>
+    </table>
+</div>
+
+<div class="footer">
+    <a href="https://github.com/drakkB/activewiki">ActiveWiki</a> — The wiki that thinks, acts, and learns.
+    Built by <a href="https://strategyarena.io">Strategy Arena</a>.
+</div>
+</body></html>"""
+
+        dashboard_path = self.working_dir / "dashboard.html"
+        dashboard_path.write_text(html)
+        return str(dashboard_path)

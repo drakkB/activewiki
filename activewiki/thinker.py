@@ -8,6 +8,7 @@ Optionally, plug in an LLM for deeper analysis.
 
 import re
 from collections import Counter
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Callable
 
 
@@ -46,7 +47,16 @@ class HypothesisGenerator:
         # Strategy 6: Unexplored areas from graph
         hypotheses.extend(self._find_unexplored(lessons, graph_summary))
 
-        # Strategy 7: LLM-powered deep analysis (if available)
+        # Strategy 7: Temporal patterns (Grok suggestion)
+        hypotheses.extend(self._detect_temporal_patterns(lessons))
+
+        # Strategy 8: Non-obvious correlations (Grok suggestion)
+        hypotheses.extend(self._find_non_obvious_correlations(lessons))
+
+        # Strategy 9: Meta-learning (the wiki improves itself)
+        hypotheses.extend(self._generate_meta_hypotheses(lessons))
+
+        # Strategy 10: LLM-powered deep analysis (if available)
         if self.llm_fn and lessons:
             hypotheses.extend(self._llm_analysis(lessons, wiki_content))
 
@@ -58,8 +68,12 @@ class HypothesisGenerator:
                 seen.add(h["id"])
                 unique.append(h)
 
-        # Sort by confidence, limit
-        unique = sorted(unique, key=lambda x: -x.get("confidence", 0))
+        # Calculate expected impact for each hypothesis
+        for h in unique:
+            h["expected_impact"] = self._calculate_expected_impact(h, lessons)
+
+        # Sort by expected impact (not just confidence)
+        unique = sorted(unique, key=lambda x: -x.get("expected_impact", 0))
         return unique[:self.max_hypotheses]
 
     def _exploit_strong_lessons(self, lessons: List[Dict]) -> List[Dict]:
@@ -265,3 +279,131 @@ Return ONLY valid JSON array."""
         except:
             pass
         return []
+
+    def _detect_temporal_patterns(self, lessons: List[Dict]) -> List[Dict]:
+        """Detect temporal patterns: recurring cycles, peak days."""
+        hypotheses = []
+        if len(lessons) < 5:
+            return hypotheses
+
+        dates = []
+        for lesson in lessons:
+            try:
+                dt = datetime.fromisoformat(lesson.get("created", "").replace("Z", "+00:00"))
+                dates.append((dt, lesson.get("strength", 1.0), lesson.get("finding", "")))
+            except:
+                continue
+
+        if len(dates) < 3:
+            return hypotheses
+
+        # Detect weekly cycle
+        day_freq = Counter(d[0].weekday() for d in dates)
+        most_common = day_freq.most_common(1)[0]
+        day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+        if most_common[1] >= 3:
+            hypotheses.append({
+                "id": "temporal_cycle",
+                "type": "temporal",
+                "hypothesis": f"Temporal pattern: strongest lessons appear on {day_names[most_common[0]]}s ({most_common[1]} occurrences). Schedule experiments on this day.",
+                "action": {"test_on_weekday": most_common[0]},
+                "evidence": f"{most_common[1]} lessons created on {day_names[most_common[0]]}",
+                "confidence": min(0.8, 0.4 + most_common[1] * 0.1),
+            })
+
+        return hypotheses
+
+    def _find_non_obvious_correlations(self, lessons: List[Dict]) -> List[Dict]:
+        """Find non-obvious correlations: co-occurring keywords with temporal lag."""
+        hypotheses = []
+        if len(lessons) < 4:
+            return hypotheses
+
+        events = []
+        for lesson in lessons:
+            words = set(w.lower() for w in lesson.get("finding", "").split() if len(w) > 4)
+            events.append((words, lesson.get("strength", 1.0), lesson.get("created", "")))
+
+        for i, (words1, s1, d1) in enumerate(events):
+            for j, (words2, s2, d2) in enumerate(events):
+                if i >= j:
+                    continue
+                overlap = words1 & words2
+                if len(overlap) >= 2 and min(s1, s2) > 0.6:
+                    # Temporal lag
+                    try:
+                        dt1 = datetime.fromisoformat(d1.replace("Z", "+00:00"))
+                        dt2 = datetime.fromisoformat(d2.replace("Z", "+00:00"))
+                        lag_days = abs((dt2 - dt1).days)
+                    except:
+                        lag_days = 0
+
+                    hypotheses.append({
+                        "id": f"corr_{'_'.join(sorted(list(overlap))[:2])}",
+                        "type": "correlation",
+                        "hypothesis": f"Non-obvious correlation: {list(overlap)[:3]} appear together (strength {min(s1,s2):.2f}, lag {lag_days}d). Test causality.",
+                        "action": {"test_correlation": list(overlap)[:3], "lag_days": lag_days},
+                        "evidence": f"overlap={list(overlap)[:3]}, lag={lag_days}d",
+                        "confidence": min(0.85, 0.4 + len(overlap) * 0.1),
+                    })
+
+        return hypotheses[:4]
+
+    def _generate_meta_hypotheses(self, lessons: List[Dict]) -> List[Dict]:
+        """Meta-learning: the wiki generates ideas to improve ITSELF."""
+        if len(lessons) < 5:
+            return []
+
+        total = len(lessons)
+        strong = sum(1 for l in lessons if l.get("strength", 0) > 0.7)
+        success_rate = strong / total
+
+        hypotheses = []
+
+        if success_rate < 0.4:
+            hypotheses.append({
+                "id": "meta_low_success",
+                "type": "meta",
+                "hypothesis": f"Wiki success rate is low ({success_rate:.0%}). Only {strong}/{total} lessons are strong. Increase exploration or change decay_rate.",
+                "action": {"meta_action": "tune_decay", "current_success_rate": success_rate},
+                "evidence": f"{total} lessons, {strong} strong ({success_rate:.0%})",
+                "confidence": 0.85,
+            })
+        elif success_rate > 0.8:
+            hypotheses.append({
+                "id": "meta_high_success",
+                "type": "meta",
+                "hypothesis": f"Wiki success rate is high ({success_rate:.0%}). Increase hypothesis count per cycle to discover more.",
+                "action": {"meta_action": "increase_hypotheses", "current_success_rate": success_rate},
+                "evidence": f"{total} lessons, {strong} strong ({success_rate:.0%})",
+                "confidence": 0.7,
+            })
+
+        return hypotheses
+
+    def _calculate_expected_impact(self, hypothesis: Dict, lessons: List[Dict]) -> float:
+        """Expected impact score (ROI-like) for prioritizing hypotheses."""
+        confidence = hypothesis.get("confidence", 0.5)
+
+        # Action value multiplier based on type
+        action_value = 1.0
+        h_type = hypothesis.get("type", "")
+        if h_type == "correlation":
+            action_value = 1.8
+        elif h_type == "temporal":
+            action_value = 1.4
+        elif h_type == "exploitation":
+            action_value = 1.6
+        elif h_type == "contradiction":
+            action_value = 2.0  # Resolving contradictions = highest value
+        elif h_type == "meta":
+            action_value = 2.2  # Improving the system itself = max value
+
+        # Bonus for supporting lessons
+        hyp_words = set(hypothesis.get("hypothesis", "").lower().split()[-5:])
+        supporting = sum(1 for l in lessons
+                        if any(w in l.get("finding", "").lower() for w in hyp_words if len(w) > 4))
+
+        impact = confidence * action_value * (1 + min(supporting * 0.15, 1.0))
+        return round(min(impact, 9.9), 2)

@@ -1,6 +1,8 @@
 """
-memory.py — Decay + Consolidation memory manager.
+memory.py — Decay + Consolidation + Confidence Scoring + Wiki Pruning.
 Inspired by elfmem: old knowledge fades, confirmed knowledge strengthens.
+Enhanced with Grok's suggestions: confidence_score evolves with age/confirmations,
+and intelligent pruning keeps the wiki lean without losing critical knowledge.
 """
 
 import json
@@ -25,6 +27,24 @@ class MemoryManager:
             except:
                 pass
         return []
+
+    def _update_confidence_score(self, lesson: Dict):
+        """Evolving confidence score 0-1 based on strength, confirmations, and age."""
+        confirmations = lesson.get("confirmations", 0)
+        strength = lesson.get("strength", 1.0)
+
+        try:
+            updated = datetime.fromisoformat(lesson.get("updated", "").replace("Z", "+00:00"))
+            if updated.tzinfo is None:
+                updated = updated.replace(tzinfo=timezone.utc)
+            days_old = (datetime.now(timezone.utc) - updated).total_seconds() / 86400
+        except:
+            days_old = 0
+
+        # Formula: strength (60%) + confirmations (30%) + age penalty (10%)
+        base = (strength * 0.6) + (min(confirmations, 10) / 10 * 0.3)
+        age_penalty = max(0.1, 1 - (days_old * 0.02))  # -2% per day since last update
+        lesson["confidence_score"] = round(max(0.1, min(1.0, base * age_penalty)), 3)
 
     def _save(self):
         self.lessons_file.write_text(json.dumps(self.lessons, indent=2, default=str))
@@ -56,6 +76,7 @@ class MemoryManager:
                 lesson["confirmations"] = lesson.get("confirmations", 0) + 1
                 lesson["confidence"] = "high" if lesson["confirmations"] >= 3 else lesson["confidence"]
                 lesson["updated"] = datetime.now(timezone.utc).isoformat()
+                self._update_confidence_score(lesson)
                 break
         else:
             self.add_lesson(finding, lesson_type="validated", confidence="medium", source="hypothesis_confirmed")
@@ -89,6 +110,8 @@ class MemoryManager:
             except:
                 pass
 
+            self._update_confidence_score(lesson)
+
         # Remove very weak lessons
         before = len(self.lessons)
         self.lessons = [l for l in self.lessons if l.get("strength", 0) > 0.15]
@@ -105,6 +128,42 @@ class MemoryManager:
         """Get high-confidence, high-strength lessons."""
         return [l for l in self.lessons
                 if l.get("strength", 0) > 0.7 and l.get("confidence") in ("high", "medium")]
+
+    def prune_wiki(self, wiki_dir: Path, max_pages: int = 150) -> int:
+        """
+        Intelligent wiki pruning: keeps the wiki lean without losing critical knowledge.
+        Pages linked to high-confidence lessons are protected. Weakest pages removed first.
+        """
+        md_files = [f for f in Path(wiki_dir).glob("*.md") if f.name != "index.md"]
+        if len(md_files) <= max_pages:
+            return 0
+
+        # Critical lessons (high confidence + high strength)
+        critical = [l for l in self.lessons
+                    if l.get("confidence_score", 0) > 0.7 and l.get("strength", 0) > 0.7]
+
+        # Score each page
+        scored = []
+        for f in md_files:
+            content = f.read_text()[:2000].lower()
+            # Score = how many critical lessons reference this page
+            crit_score = sum(1 for l in critical if l.get("finding", "")[:30].lower() in content)
+            size_score = len(content) / 1000  # bigger pages = more valuable
+            scored.append((f, crit_score + size_score))
+
+        # Sort weakest first, delete until under max_pages
+        scored.sort(key=lambda x: x[1])
+        to_delete = len(scored) - max_pages
+        deleted = 0
+
+        for f, score in scored[:to_delete]:
+            # Never delete pages with critical lessons
+            if score > 0:
+                continue
+            f.unlink()
+            deleted += 1
+
+        return deleted
 
     @staticmethod
     def _similar(text1: str, text2: str) -> bool:
